@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruta de Automóvil en San Luis Potosí, México</title>
+    <!-- Incluir la biblioteca Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Incluir la biblioteca Leaflet Routing Machine -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+</head>
+<body>
+    <!-- Crear un contenedor para el mapa -->
+    <div id="map" style="height: 600px;"></div>
+
+    <script>
+        // Crear el mapa centrado en San Luis Potosí, México
+        var map = L.map('map').setView([22.1565, -100.9855], 12);
+
+        // Agregar una capa de mapa base
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Marcar puntos de interés en San Luis Potosí
+        var pointsOfInterest = [
+            { name: "Plaza de Armas", coordinates: [22.152937, -100.974723] },
+            { name: "Museo Federico Silva", coordinates: [22.150526, -100.979357] },
+            { name: "Parque Tangamanga I", coordinates: [22.155405, -101.013348] },
+            { name: "Plaza de los Fundadores", coordinates: [22.156172, -100.978657] }
+            // Añade más puntos de interés si lo deseas
+        ];
+
+        // Iterar sobre los puntos de interés y agregar marcadores al mapa
+        pointsOfInterest.forEach(function(point) {
+            L.marker(point.coordinates).addTo(map).bindPopup(point.name);
+        });
+
+        // Configurar el servicio de enrutamiento de OSRM
+        var control = L.Routing.control({
+            waypoints: pointsOfInterest.map(function(point) {
+                return L.latLng(point.coordinates[0], point.coordinates[1]);
+            }),
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim(),
+            router: L.Routing.osrmv1({
+                serviceUrl: 'https://router.project-osrm.org/route/v1'
+            })
+        }).addTo(map);
+    </script>
+</body>
+</html>

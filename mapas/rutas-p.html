@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapas</title>
+    <!-- Incluir la biblioteca Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Incluir la biblioteca Leaflet Routing Machine -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+</head>
+<body>
+    <!-- Crear un contenedor para el mapa -->
+    <div id="map" style="height: 600px;"></div>
+
+    <script>
+        // Crear el mapa centrado en San Luis Potosí, México
+        var map = L.map('map').setView([22.1565, -100.9855], 12);
+
+        // Agregar una capa de mapa base
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Definir el icono personalizado para el punto de partida (casa)
+        var homeIcon = L.icon({
+            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/home.png',
+            iconSize: [32, 37],
+            iconAnchor: [16, 37],
+            popupAnchor: [0, -37]
+        });
+
+        // Configurar el servicio de enrutamiento de OSRM
+        var control = L.Routing.control({
+            waypoints: [
+                L.latLng(22.152937, -100.974723), // Coordenadas de San Luis Potosí (punto de partida)
+                L.latLng(22.150526, -100.979357),   // Coordenadas de museo federico Silva
+                L.latLng(22.136037273576836, -100.99510314049411),   // Coordenadas de parque tangamanga 1
+                L.latLng(22.156172, -100.978657)   // Coordenadas plaza fundadores
+            ],
+            router: L.Routing.osrmv1({
+                serviceUrl: 'https://router.project-osrm.org/route/v1'
+            }),
+            createMarker: function(i, waypoint, number) {
+                if (i === 0) {
+                    // Para el primer marcador (punto de partida), utiliza el icono de la casa
+                    return L.marker(waypoint.latLng, {
+                        draggable: true,
+                        icon: homeIcon
+                    });
+                } else {
+                    // Para los otros marcadores, utiliza el marcador predeterminado
+                    return L.marker(waypoint.latLng, {
+                        draggable: true
+                    });
+                }
+            }
+        }).addTo(map);
+        
+        // Marcar puntos de interés en San Luis Potosí
+        var pointsOfInterest = [
+            { name: "Plaza de Armas", coordinates: [22.152937, -100.974723] },
+            { name: "Museo Federico Silva", coordinates: [22.150526, -100.979357] },
+            { name: "Parque Tangamanga I", coordinates: [22.136037273576836, -100.99510314049411] },
+            { name: "Plaza de los Fundadores", coordinates: [22.156172, -100.978657] }
+            // Añade más puntos de interés si lo deseas
+        ]
+
+        // Iterar sobre los puntos de interés y agregar marcadores al mapa
+        pointsOfInterest.forEach(function(point) {
+            L.marker(point.coordinates).addTo(map).bindPopup(point.name);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruta de Automóvil en San Luis Potosí, México</title>
+    <!-- Incluir la biblioteca Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Incluir la biblioteca Leaflet Routing Machine -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+</head>
+<body>
+    <!-- Crear un contenedor para el mapa -->
+    <div id="map" style="height: 600px;"></div>
+
+    <script>
+        // Crear el mapa centrado en San Luis Potosí, México
+        var map = L.map('map').setView([22.1565, -100.9855], 7);
+
+        // Agregar una capa de mapa base
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Configurar el servicio de enrutamiento de OSRM
+        var control = L.Routing.control({
+            waypoints: [
+                L.latLng(22.1565, -100.9855), // Coordenadas de San Luis Potosí (punto de partida)
+                L.latLng(21.9969, -99.0116)   // Coordenadas de Ciudad Valles (punto de llegada)
+            ],
+            router: L.Routing.osrmv1({
+                serviceUrl: 'https://router.project-osrm.org/route/v1'
+            })
+        }).addTo(map);
+
+        // Marcar puntos en San Luis Potosí
+        var points = [
+            { name: "San Luis Potosí", coordinates: [22.1565, -100.9855] },
+            { name: "Ciudad Valles", coordinates: [21.9969, -99.0116] }
+        ];
+
+        // Iterar sobre los puntos y agregar marcadores al mapa
+        points.forEach(function(point) {
+            L.marker(point.coordinates).addTo(map).bindPopup(point.name);
+        });
+    </script>
+</body>
+</html>
